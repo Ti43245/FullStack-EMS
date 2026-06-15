@@ -4,6 +4,7 @@ import { dummyEmployeeData, DEPARTMENTS } from "../assets/assets"
 import { Plus, Search, X} from "lucide-react"
 import EmployeeCard from '../components/EmployeeCard';
 import EmployeeForm from '../components/EmployeeForm';
+import api from "../api/axios";
 
 const Employees = () => {
   const [employees, setEmployees] = useState([])
@@ -14,11 +15,16 @@ const Employees = () => {
   const [showCreateModal, setShowCreateModal] = useState(false)
 
   const fetchEmployees = useCallback(async ()=>{
-    setLoading(true)
-    setEmployees(dummyEmployeeData.filter((emp)=> (selectedDept ? emp. department === selectedDept : emp)))
-    setTimeout(()=>{
-      setLoading(false)
-    },1000)
+   try {
+    const url = selectedDept ? `/employees?department=${selectedDept}` : 
+    "/employees";
+    const res = await api.get(url)
+    setEmployees(res.data)
+   } catch (error) {
+    console.error("Failed to fetch employees");
+   }finally{
+    setLoading(false)
+   }
   }, [selectedDept])
 
   useEffect(()=>{
@@ -77,8 +83,8 @@ includes(search.toLowerCase()))
 
         {/* Create Employee Modal */}
         {showCreateModal && (
-          <div className="fixed bg-black/40 backdrop=blur-sm inset-0 z-50 flex items-start
-          justify-center p-4 overflow-y-auto" onClick={()=> setShowCreateModal(flase)}>
+          <div className="fixed bg-black/40 backdrop-blur-sm inset-0 z-50 flex items-start
+          justify-center p-4 overflow-y-auto" onClick={()=> setShowCreateModal(false)}>
             <div className="fixed inset-0"/>
             <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl my-8
             animate-fade-in" onClick={(e)=> e.stopPropagation()}>

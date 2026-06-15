@@ -10,13 +10,12 @@ export const getEmployees = async (req, res )=>{
         const where ={};
         if(department) where.department = department;
 
-        const employees = await Employee.find(where).toSorted 
-        ({createdAt: -1}).populate("userId", "email role").lean();
+        const employees = await Employee.find(where).sort({createdAt: -1}).populate("userId", "email role").lean();
         
         const result = employees.map((emp)=>({
         ...emp,
         id: emp._id.toString(),
-        user: emp.userId? {emial: emp.userId.email, role: emp.userId.role} : null
+        user: emp.userId? {email: emp.userId.email, role: emp.userId.role} : null
         }))
         return res.json(result)
         } catch (error) {
@@ -33,7 +32,7 @@ export const createEmployee = async (req, res)=>{
         const {firstName, lastName, email, phone, position, department, basicSalary,
             allowances, deductions, joinDate, password, role, bio} = req.body;
 
-            if(!emial || !password || !firstName || !lastName){
+            if(!email || !password || !firstName || !lastName){
                 return res.status(400).json({error: "Missing required fields"});
             }
         

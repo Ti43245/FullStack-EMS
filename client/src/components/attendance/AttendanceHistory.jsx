@@ -55,8 +55,8 @@ const AttendanceHistory = ({history}) => {
                                     </td>
                                     
                                      <td className='px-6 py-4'>
-                                        {dayType.label !== "-" ? <sppan className={`badge ${dayType.className}`}>
-                                            {dayType.label} </sppan> : "-"}
+                                        {dayType.label !== "-" ? <span className={`badge ${dayType.className}`}>
+                                            {dayType.label} </span> : "-"}
                                         
                                     </td>
 

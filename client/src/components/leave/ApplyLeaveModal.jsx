@@ -1,5 +1,9 @@
 import React, { useState } from 'react'
 import { X, FileText, CalendarDays, Send, Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import api from '../../api/axios';
+
+
 
 const ApplyLeaveModal = ({open, onClose, onSuccess}) => {
     const [loading, setLoading] = useState(false);
@@ -10,6 +14,17 @@ const ApplyLeaveModal = ({open, onClose, onSuccess}) => {
     
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true)
+        const formData = new FormData(e.currentTarget)
+        const data = Object.fromEntries(formData.entries())
+
+        try {
+            await api.post('/leave', data)
+            onSuccess();
+            onClose();
+        } catch (err) {
+            toast.error(err.response?.data?.error || err?.message)
+        }
     }
   if(!open) return null
   
@@ -81,7 +96,7 @@ const ApplyLeaveModal = ({open, onClose, onSuccess}) => {
                                 Cancel
                             </button>
 
-                             <button onClick={onClose} disabled={loading} 
+                             <button disabled={loading} 
                             type='submit' className="btn-primary flex-1
                             flex items-center justify-center gap-2">
                                 {loading ? <Loader2 className='w-4 h-4 animate-spin'/> : <Send className="w-4 h-4"/>}

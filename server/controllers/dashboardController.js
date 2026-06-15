@@ -3,6 +3,8 @@ import Attendance from "../models/Attendance.js";
 import Employee from "../models/Employee.js";
 import LeaveApplication from "../models/LeaveApplication.js";
 import Payslip from "../models/Payslip.js";
+
+
 // Get dashboard for employee and admin 
 // GET /api/dashboard
 
@@ -13,7 +15,7 @@ export const getDashboard = async (req, res) => {
         const session = req.session;
         if(session.role === "ADMIN"){
             const [totalEmployees, todayAttendance, pendingLeaves] = await Promise.all([
-                Employee.countDocuments({isDeleted: {$ne: true } }),
+                Employee.countDocuments({isDeleted: { $ne: true }}),
                 Attendance.countDocuments({
                     date: {
                         $gte: new Date(new Date().setHours(0, 0, 0, 0)),
@@ -36,7 +38,7 @@ export const getDashboard = async (req, res) => {
                 userId: session.userId,
 
             }).lean();
-            if (!employee) return res.status(404).json({ error: "Employee not found"});
+            if (!employee) return res.status(404).json({ error: "Employee not found" });
 
             const today = new Date();
             const [currentMonthAttendance, pendingLeaves, latestPayslip] = await Promise.all([
@@ -47,7 +49,7 @@ export const getDashboard = async (req, res) => {
                         $lt: new Date(today.getFullYear(), today.getMonth() + 1, 1),
                     }
 
-                }).
+                }),
                 LeaveApplication.countDocuments({
                     employeeId: employee._id,
                     status: "PENDING",

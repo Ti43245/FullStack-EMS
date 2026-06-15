@@ -15,7 +15,7 @@ const autoCheckout = inngest.createFunction(
     const {employeeId, attendanceId} = event.data;
 
     // wait for 9 hours
-    await step.sleepUntil("wait-for-the-9-hours", new Date(new Date ().getTime() + 9 * 60 * 60 * 1000))
+    await step.sleepUntil("wait-for-the-9-hours", new Date(new Date().getTime() + 9 * 60 * 60 * 1000))
     
     // get Attendance data
     let attendance = await Attendance.findById(attendanceId)
@@ -69,7 +69,7 @@ const leaveApplicationReminder = inngest.createFunction(
     const { leaveApplicationId } = event.data;
 
     // wait for 24 hours
-    await step.sleepUntil("wait-for-24-hours", new Date(new Date().getTime() + 24 * 60 * 60 * 1000))
+    await step.sleepUntil("wait-for-the-24-hours", new Date(new Date().getTime() + 24 * 60 * 60 * 1000))
   
     const leaveApplication = await LeaveApplication.findById(leaveApplicationId)
 
@@ -91,9 +91,9 @@ const leaveApplicationReminder = inngest.createFunction(
                 <br />
                 <p style="font-size: 16px;">Best Regards,</p>
                 <p style="font-size: 16px;">EMS</p>
-            }
+            
             </div>`
-        })
+        });
     }
   }
 );
@@ -105,8 +105,7 @@ const attendanceReminderCron = inngest.createFunction(
   async ({ step }) => {
     // Step 1: Get today's date range (IST)
     const today = await step.run("get-today-date", () => {
-        const startUTC = new Date(new Date().toLocaleDateString
-    ("en-CA", { timeZone: "Asia/kolkata"}) + "T00:00:00 + 05:30");
+        const startUTC = new Date(new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata"}) + "T00:00:00 + 05:30");
     const endUTC = new Date(startUTC.getTime() + 24 * 60 * 60 * 1000);
     return {startUTC: startUTC.toISOString(), endUTC: endUTC.toISOString()}
 
@@ -171,9 +170,11 @@ const attendanceReminderCron = inngest.createFunction(
                             </div>`
                         })
                     })
+                       await Promise.all(emailPromises)
+                       return {emailsSent: absentEmployees.length}
                 })
             }
-
+         
             return {totalActive: activeEmployees.length, onLeave: 
                 onLeaveIds.length, checkedIn: checkedInIds.length, absent: absentEmployees.length}
         
@@ -183,4 +184,8 @@ const attendanceReminderCron = inngest.createFunction(
 
 
 // Create an empty array where we'll export future Inngest functions
-export const functions = [autoCheckout, leaveApplicationReminder];
+export const functions = [
+    autoCheckout,
+    leaveApplicationReminder,
+    attendanceReminderCron
+];
