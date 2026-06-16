@@ -10,14 +10,14 @@ export const clockInOut = async (req, res) => {
   try{
     const session = req.session;
     const employee = await Employee.findOne({ userId: session.userId })
-    if (!employee.isDeleted) return res.status(403).json({
-        error: "Your account is deactivated. You cannot clock in/out.",
+    if (employee.isDeleted) return res.status(403).json({ error: "Your account is deactivated. You cannot clock in/out.",
     });
 
     const today = new Date();
     today.setHours(0,0,0,0);
 
     const existing = await Attendance.findOne({
+        employeeId: employee._id,
         date: today,
     })
 
@@ -29,7 +29,7 @@ export const clockInOut = async (req, res) => {
             employeeId: employee._id,
             date: today,
             checkIn: now,
-            status: islate ? "LATE" : "PRESENT"
+            status: isLate ? "LATE" : "PRESENT"
 
         })
 
@@ -41,8 +41,7 @@ export const clockInOut = async (req, res) => {
             }
         })
 
-        return res.json({
-             success: true, type: "CHECK_IN", data: attendance });
+        return res.json({ success: true, type: "CHECK_IN", data: attendance });
 
     } else if(!existing.checkOut){
         const checkInTime = new Date(existing.checkIn).getTime()

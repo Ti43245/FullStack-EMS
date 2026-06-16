@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from "react"
 import  { User, Save, Loader2 } from 'lucide-react'
+import api from '../api/axios'
 
 const ProfileForm = ({initialData, onSuccess}) => {
     const [loading, setLoading] = useState(false)
@@ -9,6 +10,20 @@ const ProfileForm = ({initialData, onSuccess}) => {
 
     const handleSubmit = async (e)=>{
         e.preventDefault();
+        setLoading(true)
+        setError("")
+        setMessage("")
+        const formData = new FormData(e.currentTarget)
+        try {
+            await api.post("/profile", formData)
+            setMessage("Profile updated successfully")
+            onSuccess?.()
+        } catch (err) {
+            setError(err.response?.data?.error || err.message);
+        }finally{
+            setLoading(false)
+        }
+        
     }
   return (
    <form onSubmit={handleSubmit} className='card p-5 sm:p-6 mb-6'>
@@ -42,13 +57,14 @@ const ProfileForm = ({initialData, onSuccess}) => {
             </div>
          
             <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Name</label>
-                <input disabled value={initialData.email} className='bg-slate-50 text-slate-400 cursor-not-allowed"'/>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Email</label>
+                <input disabled value={initialData.email} className='bg-slate-50 text-slate-400 cursor-not-allowed'/>
             </div>
+            
              
              <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-slate-700 mb-2">Position</label>
-                <input disabled value={initialData.position} className='bg-slate-50 text-slate-400 cursor-not-allowed"'/>
+                <input disabled value={initialData.position} className='bg-slate-50 text-slate-400 cursor-not-allowed'/>
             </div>
         </div>
          

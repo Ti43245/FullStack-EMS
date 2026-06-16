@@ -1,9 +1,10 @@
 
-// Get profile
+
 
 import Employee from "../models/Employee.js";
 import { session } from "./authController.js"
 
+// Get profile
 // Get /api/profile
 export const getProfile = async (req, res) => {
     try{
@@ -19,6 +20,7 @@ export const getProfile = async (req, res) => {
 
             })
         }
+      
     } catch (error) {
         return res.status(500).json({ error: "Failed to fetch profile" });
 
@@ -29,7 +31,7 @@ export const getProfile = async (req, res) => {
 // PUT /api/profile
 export const updateProfile =  async (req, res) => {
     try{
-        const ression = req.session;
+        const session = req.session;
         const employee = await Employee.findOne({userId: session.userId})
         if(!employee) return res.status(404).json({ error: "Employee not found" });
         if (employee.isDeleted){

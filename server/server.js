@@ -11,8 +11,6 @@ import leaveRouter from "./routes/leaveRoutes.js";
 import payslipRouter from "./routes/payslipsRoutes.js";
 import dashboardRouter from "./routes/dashboardRoutes.js";
 
-
-
 import { serve } from "inngest/express";
 import { inngest, functions } from "./inngest/index.js";
 
