@@ -7,6 +7,7 @@ const api = axios.create({
 // Attach Auth token to all network requests
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem("token")
+    // console.log('My Token: ', token)
     if (token) {
         config.headers.Authorization = `Bearer ${token}`
     }

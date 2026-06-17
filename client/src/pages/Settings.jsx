@@ -16,22 +16,25 @@ const Settings = () => {
 
   const fetchProfile = async () => {
     try {
-      const res = await api.get("/profile")
-      const profile = res.data;
-      if(profile) setProfile(profile)
+      
+        const res = await api.get("/profile")
+        const profile = res.data
+        if(profile) setProfile(profile)
+        console.log('Profile Data: ', profile)
       } catch (error) {
-    toast.error(error?.response?.data?.error || error.message)
-  }finally{
-    setLoading(false)
-  
+        toast.error(error?.response?.data?.error || error.message)
+      }finally{
+        
+        setLoading(false)
+      }
     }
-  }
 
   useEffect(()=>{
     fetchProfile()
   },[user])
 
   if(loading) return <Loading />
+
   return (
     <div className="animate-fade-in">
       <div className="page-header">

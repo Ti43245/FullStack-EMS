@@ -9,6 +9,8 @@ export function AuthProvider({ children}) {
     const [token, setToken] = useState(localStorage.getItem("token"))
     const [loading, setLoading] = useState(true)
 
+    
+
     const refreshSession = async () => {
         const storeToken = localStorage.getItem("token")
         if(!storeToken){
@@ -20,6 +22,7 @@ export function AuthProvider({ children}) {
         try {
             const { data } = await api.get("/auth/session")
             setUser(data.user)
+            console.log('Session Data: ', data.user)
             
         } catch (error) {
             // Token is invalid, clear it

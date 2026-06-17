@@ -8,6 +8,8 @@ export const login = async (req, res) => {
     try{
         const {email, password, role_type} = req.body;
 
+        console.log(email, password, role_type)
+
         if(!email || !password){
             return res.status(400).json({ error: "Email and password are required" });
         }

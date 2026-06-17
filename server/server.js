@@ -10,6 +10,7 @@ import attendanceRouter from "./routes/attendanceRoutes.js";
 import leaveRouter from "./routes/leaveRoutes.js";
 import payslipRouter from "./routes/payslipsRoutes.js";
 import dashboardRouter from "./routes/dashboardRoutes.js";
+import morgan from "morgan";
 
 import { serve } from "inngest/express";
 import { inngest, functions } from "./inngest/index.js";
@@ -22,6 +23,7 @@ const PORT = process.env.PORT || 4000;
 app.use(cors())
 app.use(express.json())
 app.use(multer().none())
+app.use(morgan('tiny'))
 
 //Routes
 app.get("/", (req, res)=> res.send("Server is running"))
