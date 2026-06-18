@@ -13,6 +13,7 @@ import {
   ChevronRightIcon,
   LogOutIcon,
   Loader2,
+  UserCog
 } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext.jsx";
@@ -63,6 +64,11 @@ const Sidebar = () => {
           href: "/attendance",
           icon: CalendarIcon,
         },
+    role === "ADMIN" && {
+      name: "Admins",
+      href: "/admins",
+      icon: UserCog
+    },
     {
       name: "Leave",
       href: "/leave",
@@ -144,7 +150,7 @@ const Sidebar = () => {
             <span className="text-sm">Loading...</span>
           </div>
         ) : (
-          navItems.map((item) => {
+          navItems.filter(item => typeof item === 'object').map((item) => {
             const isActive = pathname.startsWith(item.href);
 
             return (
