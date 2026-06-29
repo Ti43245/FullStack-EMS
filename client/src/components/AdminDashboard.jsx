@@ -1,5 +1,5 @@
 import React from 'react'
-import { User as UserIcon, Building2 as Building2Icon, Calendar as CalendarIcon, FileText as FileTextIcon } from 'lucide-react';
+import { User as UserIcon, Building2 as Building2Icon, Calendar as CalendarIcon, FileText as FileTextIcon, UserCog } from 'lucide-react';
 
 const AdminDashboard = ({data}) => {
 const stats =[
@@ -33,6 +33,14 @@ const stats =[
             value: data.pendingLeaves,
             label: "Pending Leaves",
             description: "Awaiting approval", 
+
+        },
+        {
+         
+            icon: UserCog,
+            value: data.totalAdmins || 0,
+            label: "Peer Admins",
+            description: "Other Admins Beside you", 
 
         },
 

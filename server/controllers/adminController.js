@@ -14,6 +14,57 @@ export const getAdmins = async (req, res) => {
     }
 }
 
+
+export const dummy = async (req, res) => {
+    const {id, name, email, password} = req.body
+    console.log('Dummy ran!')
+
+    return res.status(201).json({success: true, item: {id, name}})
+}
+
+// MIGRATE ADMIN
+// helper function
+export const migrateAdmin = async data => {
+
+    try {
+        
+        const {id, name, email, password} = data
+
+        if(!email || !name || !password) return {
+            status: 400,
+            payload: {error: "Missing Required Fields trying to migrate to Admin!"}
+        }
+
+        const user = await User.findByIdAndUpdate(id, {
+            email, password, role: 'ADMIN'
+        })
+
+        const admin = await Admin.create({
+            userId: user._id, name, email, password
+        })
+
+        return {
+            status: 201,
+            payload: {msg: "Admin Migration Successful!", success: true, admin}
+        }
+    } catch(error) {
+        if(error.code === 11000){
+            return {
+                status: 400,
+                payload: {error: "Migration Error: Admin Email already exists!"}
+            }
+        }
+
+        console.error("Create employee error:", error)
+
+        return {
+            status: 500,
+            payload: {error: "Migration Error: Failed to migrate Admin!"}
+        }
+    }
+
+}
+
 // CREATE ADMIN
 // POST /api/admins
 export const createAdmin = async (req, res) => {
@@ -68,7 +119,7 @@ export const updateAdmin = async (req, res) => {
         await User.findByIdAndUpdate(admin.userId, adminUpdate)
 
         return res.json({success: true})
-    } catch {
+    } catch(error) {
         if(error.code === 11000){
             return res.status(400).json({ error: "Admin Email already exists" })
         }

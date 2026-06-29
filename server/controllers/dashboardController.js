@@ -3,6 +3,7 @@ import Attendance from "../models/Attendance.js";
 import Employee from "../models/Employee.js";
 import LeaveApplication from "../models/LeaveApplication.js";
 import Payslip from "../models/Payslip.js";
+import Admin from "../models/Admin.js";
 
 
 // Get dashboard for employee and admin 
@@ -14,7 +15,7 @@ export const getDashboard = async (req, res) => {
     try {
         const session = req.session;
         if(session.role === "ADMIN"){
-            const [totalEmployees, todayAttendance, pendingLeaves] = await Promise.all([
+            const [totalEmployees, todayAttendance, pendingLeaves, totalAdmins] = await Promise.all([
                 Employee.countDocuments({isDeleted: { $ne: true }}),
                 Attendance.countDocuments({
                     date: {
@@ -22,7 +23,8 @@ export const getDashboard = async (req, res) => {
                         $lt: new Date(new Date().setHours(24,0,0,0)),
                     }
                 }),
-                LeaveApplication.countDocuments({status: "PENDING"})
+                LeaveApplication.countDocuments({status: "PENDING"}),
+                Admin.countDocuments({userId: {$ne: session.userId}})
             ])
 
             return res.json({
@@ -30,7 +32,8 @@ export const getDashboard = async (req, res) => {
                 totalEmployees,
                 totalDepartments: DEPARTMENTS.length,
                 todayAttendance,
-                pendingLeaves
+                pendingLeaves,
+                totalAdmins
             })
 
         } else {

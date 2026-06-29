@@ -1,6 +1,7 @@
 import Employee from "../models/Employee.js"
 import bcrypt from "bcrypt";
 import User from "../models/User.js"
+import { migrateAdmin } from "./adminController.js";
 
 //Get employees
 // GET /api/employees
@@ -72,17 +73,49 @@ export const createEmployee = async (req, res)=>{
 
 
 // Update employee
-// POST /api/employees/:id
+// PUT /api/employees/:id
 export const updateEmployee = async (req, res)=>{
    try{
-    const {id} = req.params;
+        const {id} = req.params;
         const {firstName, lastName, email, phone, position, department, basicSalary,
-            allowances, deductions, password, role, bio, employmentStatus} = req.body;
+        allowances, deductions, password, role, bio, employmentStatus} = req.body;
 
-            const employee = await Employee.findById(id);
-            if(!employee) return res.status(404).json({error: "Employee not  found"})
+        const employee = await Employee.findById(id);
+        if(!employee) return res.status(404).json({error: "Employee not  found"})
 
-            
+        console.log('Incoming Req Role: ', role)
+
+        const uid = employee.userId
+        const user_cred = await User.findById(uid)
+
+
+        // Update user record
+        const userUpdate = {email}
+        if(role) userUpdate.role =role;
+        if(password) userUpdate.password = await bcrypt.hash(password, 10);
+        await User.findByIdAndUpdate(employee.userId, userUpdate)
+
+        if(role === "ADMIN") {
+
+            const data = {
+                id: uid,
+                name: firstName + ' ' + lastName,
+                password: user_cred.password,
+                email: user_cred.email
+            }
+
+            const {status, payload} = await migrateAdmin(data)
+
+            // console.log(status, payload)
+            if(status===201) {
+                let deleted = await Employee.findByIdAndDelete(id)
+                console.log('Delete ran: ', !!deleted)
+            }
+            return res.status(status).json(payload)
+           
+
+        }
+
             await Employee.findByIdAndUpdate(id, {
                 firstName,
                 lastName,
@@ -97,16 +130,8 @@ export const updateEmployee = async (req, res)=>{
                 bio: bio || "",
 
             })
-    // Update user record
-    const userUpdate = {email}
-    if(role) userUpdate.role =role;
-    if(password) userUpdate.password = await bcrypt.hash
-    (password, 10);
-    await User.findByIdAndUpdate(employee.userId, userUpdate)
-    
-   
 
-            return res.json({success: true})
+        return res.json({success: true})
     } catch (error){
         if(error.code === 11000){
             return res.status(400).json({ error: "Email already exists" })

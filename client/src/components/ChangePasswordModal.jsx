@@ -17,15 +17,21 @@ const ChangePasswordModal = ({open, onClose}) => {
         try {
             const { data } = await api.post("/auth/change-password",
                 {currentPassword, newPassword});
-                if(!data.success) throw new Error(data.error || "Failed")
-                    setMessage({type: "success", text: "Password updated successfully"})
-                    e.target.reset();
-            } catch (error) {
-                setMessage({ type: "error", text: error.message})
-            } finally{
-                setLoading(false);
-            }
+
+                setMessage({type: "success", text: "Password updated successfully"})
+                e.target.reset();
+        } catch (error) {
+            setMessage({
+                type: "error",
+                text:
+                    error.response?.data?.error ||
+                    error.message ||
+                    "Something went wrong"
+            });
+        } finally{
+            setLoading(false);
         }
+    }
 
     
 

@@ -1,7 +1,6 @@
-
-
-
+import Admin from "../models/Admin.js";
 import Employee from "../models/Employee.js";
+import User from "../models/User.js";
 import { session } from "./authController.js"
 
 // Get profile
@@ -10,21 +9,11 @@ export const getProfile = async (req, res) => {
     try{
         const session = req.session;
         const employee = await Employee.findOne({userId: session.userId})
-
+        const admin = await Admin.findOne({userId: session.userId})
         //console.log('Employee: ', employee)
 
-        if(!employee){
-            // Authenticated user is not an employee - return admin profile
-            return res.json({
-                firstName: "Admin",
-                lastName: "",
-                email: session.email,
-
-            })
-        }
-
         return res.json(!employee ? {
-                firstName: "Admin",
+                firstName: admin.name,
                 lastName: "",
                 email: session.email,
 
@@ -43,11 +32,13 @@ export const getProfile = async (req, res) => {
     }
 }
 
-// Update profile
+// Update Exployee profile
 // PUT /api/profile
 export const updateProfile =  async (req, res) => {
     try{
         const session = req.session;
+        console.log('Employee Session: ', session)
+        console.log('Emp Payload: ', req.body)
         const employee = await Employee.findOne({userId: session.userId})
 
         if(!employee) return res.status(404).json({ error: "Employee not found" });
@@ -55,9 +46,37 @@ export const updateProfile =  async (req, res) => {
         if (employee.isDeleted){
             return res.status(403).json({error: "Your account is deactivated. You cannot update your profile.",})
         }
-
         await Employee.findByIdAndUpdate(employee._id, {
             bio: req.body.bio
+        })
+        return res.json({ success: true});
+    }catch (error){
+        return res.status(500).json({ error: "Failed to update profile" });
+    }
+}
+
+// Update Admin Profile
+// PUT /api/adminprofile
+export const updateAdminProfile =  async (req, res) => {
+
+/*         console.log('Admin Endpoint recieved!')
+        return res.json({ success: true}) */
+
+    try{
+        const session = req.session;
+        // console.log("Admin Session: ", session)
+        const admin = await Admin.findOne({userId: session.userId})
+        // onsole.log('Admin Fetched: ', admin)
+        if(!admin) return res.status(404).json({ error: "Admin not found" });
+
+        const {name: aname, email: aemail} = req.body
+        // console.log('Admin Credentials: ', name, email)
+        await Admin.findByIdAndUpdate(admin._id, {
+            name: aname, email: aemail
+        })
+
+        await User.findByIdAndUpdate(session.userId, {
+            email: aemail
         })
         return res.json({ success: true});
     }catch (error){

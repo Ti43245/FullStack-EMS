@@ -129,13 +129,14 @@ const EmployeeForm = ({initialData, onSuccess, onCancel}) => {
                 <input type="password" name="password" placeholder="Leave blank to keep current" />
                </div>
             )}
-            <div>
+            {isEditMode && <div>
                 <label className="block mb-2">System Role </label>
                <select name="role" defaultValue={initialData?.user?.role || "EMPLOYEE"}>
                 <option value="EMPLOYEE">Employee</option>
                 <option value="ADMIN">Admin</option>
                </select>
-               </div>
+            </div>}
+
     </div>
    </div>
      {/* buttons */}
