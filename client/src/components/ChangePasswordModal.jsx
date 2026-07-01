@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Loader2Icon, LockIcon, X } from 'lucide-react'
 import api from '../api/axios'
+import toast from 'react-hot-toast'
 
 const ChangePasswordModal = ({open, onClose}) => {
     const [loading, setLoading] = useState(false)
@@ -19,6 +20,11 @@ const ChangePasswordModal = ({open, onClose}) => {
                 {currentPassword, newPassword});
 
                 setMessage({type: "success", text: "Password updated successfully"})
+                toast.success("Password updated successfully", {
+                    duration: 6 * 1000
+                })
+                onClose()
+
                 e.target.reset();
         } catch (error) {
             setMessage({

@@ -100,15 +100,16 @@ const leaveApplicationReminder = inngest.createFunction(
 
 // Cron: Check attendance at 11:30 AM IST (06:00 UTC) and email absent employess
 const attendanceReminderCron = inngest.createFunction(
-  { id: "attendance-reminder-cron", triggers: [{cron: "TZ=Asia/kolkata 30 11 * * *"}] },
+  { id: "attendance-reminder-cron", 
+    triggers: [{cron: "TZ=Asia/Yangon 30 11 * * *"}] },
    // 06:00 UTC = 11:30 AM IST
   async ({ step }) => {
     // Step 1: Get today's date range (IST)
     const today = await step.run("get-today-date", () => {
-        const startUTC = new Date(new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata"}) + "T00:00:00 + 05:30");
-    const endUTC = new Date(startUTC.getTime() + 24 * 60 * 60 * 1000);
-    return {startUTC: startUTC.toISOString(), endUTC: endUTC.toISOString()}
-
+        const startUTC = new Date(new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Yangon"}) + "T00:00:00 + 05:30");
+        const endUTC = new Date(startUTC.getTime() + 24 * 60 * 60 * 1000);
+        
+        return {startUTC: startUTC.toISOString(), endUTC: endUTC.toISOString()}
     })
 
     // Step 2: Get all active, non-deleted employees
